@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { NewsletterSubscriber } from "./newsletter.model";
+import { sendVerificationEmail } from "../../../utils/email.util";
 
 export const subscribeNewsletter = async (
   email: string,
@@ -20,6 +21,10 @@ export const subscribeNewsletter = async (
       existing.verificationToken = crypto.randomBytes(32).toString("hex");
       existing.verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
       await existing.save();
+
+      // Send verification email
+      await sendVerificationEmail(normalizedEmail, existing.verificationToken);
+
       return { message: "Re-subscribed. Please verify your email.", subscriber: existing };
     }
   }
@@ -37,7 +42,9 @@ export const subscribeNewsletter = async (
     verificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   });
 
-  // TODO: send verification email using project's email utility
+  // Send verification email
+  await sendVerificationEmail(normalizedEmail, token);
+
   return { message: "Subscribed! Please verify your email.", subscriber };
 };
 
