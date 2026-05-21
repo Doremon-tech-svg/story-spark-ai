@@ -3,9 +3,12 @@ import { useGetFeaturedListsQuery } from "../../../redux/apis/post.api";
 import { formatDateShort } from "../../../utils/time-formate";
 import LoadingAnimation from "../../loading/loading.component";
 import SSProfile from "../../ui-component/ss-profile/ss-profile";
+import { useNavigate } from "react-router-dom";
 
 const FeatureComponent = () => {
   const { data, isLoading } = useGetFeaturedListsQuery(undefined);
+  const navigate = useNavigate();
+
   if (isLoading) {
     return <LoadingAnimation />;
   }
@@ -17,7 +20,8 @@ const FeatureComponent = () => {
           data?.posts?.map((post: Post) => (
             <div
               key={post._id}
-              className="h-full bg-blue-500/10 rounded-lg shadow-sm overflow-hidden"
+              onClick={() => navigate('/post/' + post._id)}
+              className="h-full bg-blue-500/10 rounded-lg shadow-sm overflow-hidden cursor-pointer hover:bg-blue-500/20 transition-colors duration-200"
             >
               <img
                 className="h-48 w-full object-cover"
