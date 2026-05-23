@@ -146,15 +146,14 @@ const handleClearPrompt = () => {
 
   const isOverLimit = textareaValue.length >= MAX_PROMPT_LENGTH;
   const isNearLimit = textareaValue.length >= MAX_PROMPT_LENGTH * WARN_THRESHOLD;
-  console.log("Stories component rendered");
   
   useKeyboardShortcuts({
   onOpenHelp: () => setShowHelpModal(true),
   onCloseHelp: () => setShowHelpModal(false),
   onGenerate: () => {
-    const form = document.querySelector("form");
-    if (form) {
-      form.requestSubmit();
+    if (inputRef.current) {
+      const form = inputRef.current.closest("form");
+      if (form) form.requestSubmit();
     }
   },
   onPublish: () => {
@@ -295,14 +294,15 @@ const handleClearPrompt = () => {
         placeholder="Every great story begins with a single idea. What's yours?"
         value={textareaValue}
         maxLength={MAX_PROMPT_LENGTH}
-onChange={(e) => setTextareaValue(e.target.value)}
+        onChange={(e) => setTextareaValue(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             const form = e.currentTarget.closest("form");
             if (form) form.requestSubmit();
           }
-        }}      />
+        }}      
+        />
 
       {textareaValue.length > 0 && (
         <button
@@ -362,6 +362,10 @@ onChange={(e) => setTextareaValue(e.target.value)}
         Enter
       </kbd>{" "}
       to generate &bull;{" "}
+      <kbd className="px-1 py-0.5 text-xs bg-gray-700 rounded border border-gray-600">
+        Ctrl + Enter
+      </kbd>{" "}
+      also works &bull;{" "}
       <kbd className="px-1 py-0.5 text-xs bg-gray-700 rounded border border-gray-600">
         Shift + Enter
       </kbd>{" "}
