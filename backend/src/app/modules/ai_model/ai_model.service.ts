@@ -10,10 +10,12 @@ import {
 import {
   IAIModel,
   IAlternateEndingPayload,
+  IRemixPayload,
 } from "./ai_model.interface";
 import {
   generateAlternateEndingsWithGemini,
   generateWithGeminiStories,
+  generateRemixWithGemini,
 } from "./ai_model.utils";
 import { assertSuccessfulGeneration } from "./quota.lifecycle";
 
@@ -177,9 +179,37 @@ const aiFreeModelAlternateEndings = async (payload: IAlternateEndingPayload) => 
   }
 };
 
+const aiModelRemix = async (payload: IRemixPayload, _token: ITokenPayload) => {
+  const { title, content, tag, remixType, remixOption = "", language = "English" } = payload;
+  try {
+    const result = await raceGenerationWithTimeout(
+      () => generateRemixWithGemini(title, content, tag, remixType, remixOption, language),
+      AUTHENTICATED_GENERATION_TIMEOUT_MS
+    );
+    return result;
+  } catch (error) {
+    mapGenerationError(error, "Remix generation failed.");
+  }
+};
+
+const aiFreeModelRemix = async (payload: IRemixPayload) => {
+  const { title, content, tag, remixType, remixOption = "", language = "English" } = payload;
+  try {
+    const result = await raceGenerationWithTimeout(
+      () => generateRemixWithGemini(title, content, tag, remixType, remixOption, language),
+      FREE_GENERATION_TIMEOUT_MS
+    );
+    return result;
+  } catch (error) {
+    mapGenerationError(error, "Remix generation failed.");
+  }
+};
+
 export const AiModelService = {
   aiModelGenerate,
   aiFreeModelGenerate,
   aiModelAlternateEndings,
   aiFreeModelAlternateEndings,
+  aiModelRemix,
+  aiFreeModelRemix,
 };
