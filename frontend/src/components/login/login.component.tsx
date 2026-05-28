@@ -1,6 +1,4 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import SSInput from "../ui-component/ss-input/ss-input";
-import SSButton from "../ui-component/ss-button/ss-button";
 import { useState } from "react";
 import "./auth.css";
 
@@ -31,7 +29,6 @@ const LoginComponent = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
   } = useForm<Inputs>({ mode: "onChange" });
 
   const [isBusy, setIsBusy] = useState<boolean>(false);

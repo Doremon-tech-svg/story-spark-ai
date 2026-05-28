@@ -1,6 +1,5 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import SSInput from "../ui-component/ss-input/ss-input";
-import SSButton from "../ui-component/ss-button/ss-button";
+
 import { useState, useEffect } from "react";
 import { storeUserInfo } from "../../services/auth.service";
 import toast, { Toaster } from "react-hot-toast";
@@ -492,105 +491,134 @@ const SignUpComponent = () => {
                 )}
 
               </div>
+{/* PASSWORD STRENGTH */}
 
-              {/* PASSWORD STRENGTH */}
+{password && (
+  <div className="space-y-2">
 
-              {password && (
-                <div className="space-y-2">
+    <div className="h-2 rounded-full bg-white/10 overflow-hidden">
 
-                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-
-                    <div
-                      className={`h-full transition-all duration-300 ${barColor} ${barWidth}`}
-                    />
-
-                  </div>
-
-                  <p className={`text-sm font-medium ${textColor}`}>
-                    Password Strength: {strengthLabel}
-                  </p>
-
-                </div>
-              )}
-
-              {/* OTP FIELD */}
-
-              {showOtpField && (
-                <div>
-
-                  <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-
-                    OTP Code
-
-                  </label>
-
-                  <input
-                    type="text"
-                    placeholder="Enter OTP"
-                    className="w-full h-[52px] rounded-2xl border border-black/10 dark:border-white/10 bg-gray-100 dark:bg-[#131c2f] px-5 text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 outline-none focus:border-purple-500 transition-all"
-                    {...register("otp")}
-                  />
-
-                </div>
-              )}
-
-              {/* BUTTON */}
-
-              {!showOtpField ? (
-                <button
-                  type="submit"
-                  disabled={isBusy}
-                  className="w-full h-[52px] rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold text-lg shadow-lg hover:scale-[1.01] transition-all duration-300"
-                >
-
-                  {isBusy ? "Creating..." : "Create Account"}
-
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleOtpValidation}
-                  disabled={isBusy}
-                  className="w-full h-[52px] rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold text-lg shadow-lg hover:scale-[1.01] transition-all duration-300"
-                >
-
-                  {isBusy ? "Verifying..." : "Verify OTP"}
-
-                </button>
-              )}
-
-            </form>
-
-            {/* Footer */}
-
-            <p className="text-center mt-8 text-[16px] text-gray-600 dark:text-gray-400">
-
-              Already have an account?{" "}
-
-              <a
-                href="/login"
-                className="text-purple-500 font-bold hover:text-pink-500 transition-all"
-              >
-
-                Sign in
-
-
-              </a>
-
-            </p>
-
-          </div>
-
-        </section>
-
-      </main>
-
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
+      <div
+        className={`h-full transition-all duration-300 ${barColor} ${barWidth}`}
       />
 
     </div>
+
+    <p className={`text-sm font-medium ${textColor}`}>
+      Password Strength: {strengthLabel}
+    </p>
+
+    <div className="space-y-1 mt-3">
+
+      {PASSWORD_REQUIREMENTS.map((rule) => (
+        <p
+          key={rule.key}
+          className={`text-xs ${
+            passwordChecks[rule.key]
+              ? "text-green-400"
+              : "text-gray-400"
+          }`}
+        >
+          • {rule.label}
+        </p>
+      ))}
+
+    </div>
+
+  </div>
+)}
+
+{/* OTP FIELD */}
+
+{showOtpField && (
+  <div>
+
+    <label className="block mb-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+      OTP Code
+    </label>
+
+    <input
+      type="text"
+      placeholder="Enter OTP"
+      className="w-full h-[52px] rounded-2xl border border-black/10 dark:border-white/10 bg-gray-100 dark:bg-[#131c2f] px-5 text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 outline-none focus:border-purple-500 transition-all"
+      {...register("otp")}
+    />
+
+    <div className="flex justify-end mt-2">
+
+      <button
+        type="button"
+        onClick={handleResendOtp}
+        disabled={cooldown > 0}
+        className="text-sm text-purple-400 hover:text-pink-400 transition-all disabled:opacity-50"
+      >
+        {cooldown > 0
+          ? `Resend OTP in ${cooldown}s`
+          : "Resend OTP"}
+      </button>
+
+    </div>
+
+  </div>
+)}
+
+          {/* BUTTON */}
+
+          {!showOtpField ? (
+            <button
+              type="submit"
+              disabled={isBusy}
+              className="w-full h-[52px] rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold text-lg shadow-lg hover:scale-[1.01] transition-all duration-300"
+            >
+
+              {isBusy ? "Creating..." : "Create Account"}
+
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleOtpValidation}
+              disabled={isBusy}
+              className="w-full h-[52px] rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold text-lg shadow-lg hover:scale-[1.01] transition-all duration-300"
+            >
+
+              {isBusy ? "Verifying..." : "Verify OTP"}
+
+            </button>
+          )}
+
+        </form>
+
+        {/* Footer */}
+
+        <p className="text-center mt-8 text-[16px] text-gray-600 dark:text-gray-400">
+
+          Already have an account?{" "}
+
+          <a
+            href="/login"
+            className="text-purple-500 font-bold hover:text-pink-500 transition-all"
+          >
+
+            Sign in
+
+
+          </a>
+
+        </p>
+
+    </div>
+
+        </section >
+
+      </main >
+
+  <Toaster
+    position="top-right"
+    reverseOrder={false}
+  />
+
+    </div >
   );
 };
 
