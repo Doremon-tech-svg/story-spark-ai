@@ -40,8 +40,10 @@ import AboutUsComponent from "./components/footer/about-us.tsx";
 import CareerComponent from "./components/footer/career.tsx";
 import BlogComponent from "./components/footer/blog.tsx";
 import PrivacyPolicy from "./components/footer/Privacy.tsx";
+import CookiePolicy from "./components/footer/cookie-policy.tsx";
 import Terms from "./components/footer/terms.tsx";
 import GuidelinesComponent from "./components/footer/guidelines.tsx";
+
 import TemplatesComponent from "./components/templates/templates.component";
 import CommunityComponent from "./components/community/community.component";
 import ResourcesListComponent from "./components/community/resources_list.component";
@@ -110,6 +112,7 @@ const router = createBrowserRouter([
       { path: "career", element: <CareerComponent /> },
       { path: "blog", element: <BlogComponent /> },
       { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "cookie-policy", element: <CookiePolicy /> },
       { path: "terms", element: <Terms /> },
       { path: "help-center", element: <HelpCenterComponent /> },
       { path: "guidelines", element: <GuidelinesComponent /> },
@@ -171,13 +174,100 @@ const router = createBrowserRouter([
 // =========================================================================
 // APP
 // =========================================================================
+const ALL_ROLES = [USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN, USER_ROLE.WRITER, USER_ROLE.USER];
+const ELEVATED_ADMIN_ROLES = [USER_ROLE.ADMIN, USER_ROLE.SUPER_ADMIN];
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <>
+        <MagicCursorComponent />
+        <ScrollToTop />
+        <RootLayout>
+          <Outlet />
+        </RootLayout>
+      </>
+    ),
+    children: [
+      { index: true, element: <><HeroSectionComponent /><HomeComponent /></> },
+      { path: "templates", element: <TemplatesComponent /> },
+      { path: "writing-assistant", element: <WritingAssistantComponent /> },
+      { path: "story-inspiration", element: <StoryInspirationWrapper /> },
+      { path: "stories", element: <StoriesComponent /> },
+      { path: "story-workspace", element: <StoryWorkspace /> },
+      { path: "login", element: <LoginComponent /> },
+      { path: "signup", element: <SignUpComponent /> },
+      { path: "pricing", element: <PricingComponent /> },
+      { path: "post/:id", element: <PostDetailsComponent /> },
+      { path: "help", element: <HelpCenterComponent /> },
+      { path: "contact-us", element: <Contact /> },
+      { path: "about-us", element: <AboutUsComponent /> },
+      { path: "career", element: <CareerComponent /> },
+      { path: "blog", element: <BlogComponent /> },
+      { path: "privacy-policy", element: <PrivacyPolicy /> },
+      { path: "cookie-policy", element: <CookiePolicy /> },
+      { path: "terms", element: <Terms /> },
+      { path: "help-center", element: <HelpCenterComponent /> },
+      { path: "guidelines", element: <GuidelinesComponent /> },
+      { path: "contributors", element: <ContributorsComponent /> },
+      { path: "report-bug", element: <ReportBug /> },
+
+      // Protected Sub-Tree running under the RootLayout context
+      {
+        element: <ProtectedRoute allowedRoles={ALL_ROLES} />,
+        children: [
+          { path: "explore", element: <ExploreComponent /> },
+          { path: "bookmarks", element: <BookmarksComponent /> },
+          { path: "community", element: <CommunityComponent /> },
+          { path: "resources", element: <ResourcesListComponent /> },
+          { path: "resources/:resourceName", element: <ResourceDetailComponent /> },
+        ],
+      },
+      { path: "*", element: <NotFoundComponent /> },
+    ],
+  },
+  
+  // Isolated layout branches (Bypassing public navigation headers entirely)
+  { path: "/auth/email-validation", element: <EmailValidationComponent /> },
+  { path: "/payment", element: <PaymentComponent /> },
+  { path: "/analytics", element: <AnalyticsPage /> },
+  { path: "/collab", element: <CollabHome /> },
+  { path: "/collab/:roomId", element: <CollabRoom /> },
+
+  // Administrative Dashboard Infrastructure Tree
+  {
+    path: "/dashboard",
+    element: <ProtectedRoute allowedRoles={ALL_ROLES} />, 
+    children: [
+      {
+        element: <DashboardLayout />, 
+        children: [
+          { index: true, element: <DashboardComponent /> },
+          { path: "analytics", element: <AnalyticsPage /> },
+          { path: "post-lists", element: <PostListsComponent /> },
+          { path: "profile", element: <ProfileComponent /> },
+          { path: "writers", element: <WriterApplicationComponent /> },
+          {
+            path: "users",
+            children: [
+              { index: true, element: <UserComponent /> },
+              { path: "list", element: <UserListComponent /> },
+            ],
+          },
+          // Independent structural guard layer checking high-tier Admin roles
+          {
+            element: <ProtectedRoute allowedRoles={ELEVATED_ADMIN_ROLES} />,
+            children: [{ path: "settings", element: <SettingComponent /> }],
+          },
+        ],
+      },
+    ],
+  },
+]);
+
 function App() {
-  return (
-    <>
-      <MagicCursorComponent />
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
