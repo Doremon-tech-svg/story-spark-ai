@@ -1,12 +1,4 @@
 import React from "react";
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-router-dom";
-import ScrollToTop from "./components/ScrollToTop";
-import StoryInspirationWrapper from "./components/StoryInspirationWrapper";
-import WritingAssistantComponent from "./components/writing-assistant/writing_assistant.component";
-import CollabHome from "./components/collab/CollabHome";
-import CollabRoom from "./components/collab/CollabRoom";
-import StoriesComponent from "./components/stories/stories.component";
-
 import {
   createBrowserRouter,
   RouterProvider,
@@ -14,7 +6,10 @@ import {
   Outlet,
 } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
-
+import StoryInspirationWrapper from "./components/StoryInspirationWrapper";
+import WritingAssistantComponent from "./components/writing-assistant/writing_assistant.component";
+import CollabHome from "./components/collab/CollabHome";
+import CollabRoom from "./components/collab/CollabRoom";
 import HeroSectionComponent from "./components/hero/hero_section.component";
 import HomeComponent from "./components/home/home.component";
 import LoginComponent from "./components/login/login.component";
@@ -51,6 +46,7 @@ import ResourcesListComponent from "./components/community/resources_list.compon
 import ResourceDetailComponent from "./components/community/resource_detail.component";
 import ContributorsComponent from "./components/footer/contributors";
 import ReportBug from "./components/report-bug/ReportBug";
+import ForgotPasswordComponent from "./components/forgot-password/forgot-password.component";
 import AnalyticsPage from "./components/dashboard/analytics/analytics.page";
 import StoryWorkspace from "./components/story/StoryWorkspace";
 import StoriesComponent from "./components/stories/stories.component";
@@ -103,6 +99,7 @@ const router = createBrowserRouter([
       { path: "guidelines", element: <GuidelinesComponent /> },
       { path: "contributors", element: <ContributorsComponent /> },
       { path: "report-bug", element: <ReportBug /> },
+      { path: "forgot-password", element: <ForgotPasswordComponent /> },
       {
         element: <ProtectedRoute allowedRoles={ALL_ROLES} />,
         children: [
