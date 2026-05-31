@@ -12,7 +12,9 @@ interface FAQAccordionProps {
 
 const FAQAccordion: FC<FAQAccordionProps> = ({ items }) => {
   const baseId = useId();
-  const [openId, setOpenId] = useState<string | null>(items[0]?.id ?? null);
+  const [openId, setOpenId] = useState<string | null>(
+    items[0]?.id ?? null
+  );
 
   const toggleItem = useCallback((id: string) => {
     setOpenId((current) => (current === id ? null : id));
@@ -32,10 +34,10 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ items }) => {
   if (items.length === 0) {
     return (
       <section id="faq" className="scroll-mt-24">
-
-        <div className="text-center py-12 bg-gray-50 dark:bg-blue-500/5 rounded-xl border border-gray-200 dark:border-white/5">
-          <p className="text-gray-600 dark:text-gray-400">No FAQ items match your search.</p>
-
+        <div className="text-center py-12 bg-white dark:bg-blue-500/5 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+          <p className="text-slate-600 dark:text-gray-400">
+            No FAQ items match your search.
+          </p>
         </div>
       </section>
     );
@@ -107,77 +109,84 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ items }) => {
               >
                 {/* Question Button */}
       <div className="text-center mb-10">
-
-        <h2 id="faq-heading" className="text-3xl font-extrabold text-gray-900 dark:text-gray-300">
+        <h2
+          id="faq-heading"
+          className="text-3xl font-bold text-slate-800 dark:text-gray-300"
+        >
           Frequently Asked Questions
         </h2>
-        <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
 
+        <p className="mt-3 text-slate-600 dark:text-gray-400 max-w-2xl mx-auto">
           Quick answers to the most common StorySparkAI questions.
         </p>
       </div>
 
-      <div className="space-y-3" role="list">
-        {items.map((item) => {
-          const isOpen = openId === item.id;
-          const panelId = `${baseId}-${item.id}-panel`;
-          const buttonId = `${baseId}-${item.id}-button`;
+      <div className="space-y-5 max-w-3xl mx-auto">
+        {items.map((faq, index) => {
+          const isOpen = openIndex === index;
 
           return (
+
+
             <article
               key={item.id}
               role="listitem"
-
-              className="bg-white dark:bg-blue-500/10 border border-gray-200 dark:border-white/5 rounded-xl overflow-hidden shadow-sm dark:shadow-none transition-colors hover:border-indigo-400 dark:hover:border-indigo-500/20"
-
+               onMouseLeave={() => setOpenId(null)}
+              className="bg-blue-500/10 border border-white/5 rounded-xl overflow-hidden transition-colors hover:border-indigo-500/20"
             >
               <h3>
                 <button
-                  onClick={() => toggleAccordion(index)}
-                  className="
-                    w-full flex items-center justify-between
-                    px-6 py-5 text-left
-                    transition-all duration-300
-                    hover:bg-slate-50 dark:hover:bg-white/[0.03]
-                    cursor-pointer
-                  "
+                  id={buttonId}
+                  type="button"
+                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  onMouseEnter={() => toggleItem(item.id)}
+                  onKeyDown={(e) => handleKeyDown(e, item.id)}
+
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="group overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.04] backdrop-blur-xl shadow-sm hover:shadow-md transition-all duration-300"
+
+            <article
+              key={item.id}
+              role="listitem"
+              className="bg-white dark:bg-blue-500/10 border border-slate-200 dark:border-white/5 rounded-xl overflow-hidden shadow-sm transition-colors hover:border-indigo-500/30"
+
+            >
+              <button
+                onClick={() => toggleAccordion(index)}
+                className="w-full flex items-center justify-between px-6 py-5 text-left transition-all duration-300 hover:bg-slate-50 dark:hover:bg-white/[0.03] cursor-pointer"
+              >
+                <span className="text-slate-900 dark:text-slate-200 font-bold pr-4">
+                  {faq.question}
+                </span>
+                <span
+                  className={`flex-shrink-0 w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 transition-transform duration-300 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                  aria-hidden="true"
+
                 >
-
-
-                  <span className="text-gray-900 dark:text-gray-300 font-bold pr-4">
-
-                     
-                     
+                  <span className="text-slate-800 dark:text-gray-300 font-medium pr-4">
                     {item.question}
                   </span>
-                  <span
-                    className={`flex-shrink-0 w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 transition-transform duration-300 ${
 
+                  <span
+                    className={`flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                     aria-hidden="true"
                   >
-                    <i className="fa-solid fa-chevron-down"></i>
-                  </motion.div>
-                </button>
-
-                {/* Answer */}
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="px-6 pb-6">
-                        <div className="pl-[60px]">
-                          <div className="rounded-2xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-white/5 p-5">
-                            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                              {faq.answer}
-                            </p>
-                          </div>
-                        </div>
+                    <div className="px-6 pb-6">
+                      <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-white/5 p-4 mt-2">
+                        <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
+                          {faq.answer}
+                        </p>
                       </div>
                     </motion.div>
                   )}
@@ -206,12 +215,12 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ items }) => {
                 aria-labelledby={buttonId}
                 hidden={!isOpen}
                 className={`px-6 overflow-hidden transition-all duration-300 ${
-                  isOpen ? "pb-5 max-h-96 opacity-100" : "max-h-0 opacity-0"
+                  isOpen
+                    ? "pb-5 max-h-96 opacity-100"
+                    : "max-h-0 opacity-0"
                 }`}
               >
-
-                <p className="text-gray-700 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-white/5 pt-4">
-
+                <p className="text-slate-600 dark:text-gray-400 leading-relaxed border-t border-slate-200 dark:border-white/5 pt-4">
                   {item.answer}
                 </p>
               </div>
@@ -219,7 +228,7 @@ const FAQAccordion: FC<FAQAccordionProps> = ({ items }) => {
           );
         })}
       </div>
-    </motion.section>
+    </section>
   );
 };
 

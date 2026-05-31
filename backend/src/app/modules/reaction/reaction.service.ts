@@ -21,45 +21,48 @@ const toggleReaction = async (
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
   }
 
-  try {
+  const existingReaction = await Reaction.findOne({
+    userId: user._id,
+    postId: post._id,
+  });
+
+  if (existingReaction) {
+    // Remove reaction atomically
+    await Reaction.findByIdAndDelete(existingReaction._id);
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: postId },
+      {
+        $pull: { reactions: existingReaction._id },
+        $inc: { likesCount: -1 },
+      },
+      { new: true }
+    );
+    // Ensure likesCount never goes below 0
+    if (updatedPost && updatedPost.likesCount < 0) {
+      await Post.updateOne({ _id: postId }, { $set: { likesCount: 0 } });
+    }
+    return {
+      message: "Reaction removed",
+      likesCount: Math.max(0, updatedPost?.likesCount ?? 0),
+    };
+  } else {
+    // Add reaction atomically
     const newReaction = await Reaction.create({
       postId: new Types.ObjectId(postId),
       userId: user._id,
       type: type,
     });
-
-    await Post.updateOne(
+    const updatedPost = await Post.findOneAndUpdate(
       { _id: postId },
-      { $inc: { likesCount: 1 }, $addToSet: { reactions: newReaction._id } }
+      {
+        $addToSet: { reactions: newReaction._id },
+        $inc: { likesCount: 1 },
+      },
+      { new: true }
     );
-
-    return { message: "Reaction added", likesCount: post.likesCount + 1 };
-  } catch (error: any) {
-    if (error?.code !== 11000) {
-      throw error;
-    }
-
-    const deletedReaction = await Reaction.findOneAndDelete({
-      postId: new Types.ObjectId(postId),
-      userId: user._id,
-      type: type,
-    });
-
-    if (deletedReaction) {
-      await Post.updateOne(
-        { _id: postId },
-        { $inc: { likesCount: -1 }, $pull: { reactions: deletedReaction._id } }
-      );
-
-      await Post.updateOne(
-        { _id: postId, likesCount: { $lt: 0 } },
-        { $set: { likesCount: 0 } }
-      );
-    }
-
     return {
-      message: "Reaction removed",
-      likesCount: Math.max(0, post.likesCount - 1),
+      message: "Reaction added",
+      likesCount: updatedPost?.likesCount ?? 0,
     };
   }
 };
