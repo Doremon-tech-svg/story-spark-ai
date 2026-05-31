@@ -48,7 +48,7 @@ const login = async (payload: AuthModel) => {
   return { accessToken, refreshToken };
 };
 
-const register = async (payload: IUser & { verificationToken?: string; confirmPassword?: string }) => {
+const register = async (payload: IUser & { verificationToken?: string }) => {
   const { email: userEmail, verificationToken } = payload;
 
   if (!verificationToken) {
@@ -245,8 +245,7 @@ const changePassword = async (userPayload: any, payload: any) => {
   }
 
   await user.save();
-};
-
+}
 const forgotPassword = async (email: string) => {
   if (!email) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Email is required!");
@@ -339,7 +338,7 @@ const resetPassword = async (payload: {
   return { accessToken, refreshToken };
 };
 
-export const AuthService = {
+ export const AuthService = {
   login,
   register,
   refreshToken,
