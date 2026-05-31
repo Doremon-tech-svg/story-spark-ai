@@ -16,15 +16,10 @@ import BookmarksComponent from "./components/post/bookmarks.component";
 import CareerComponent from "./components/footer/career.tsx";
 import CollabHome from "./components/collab/CollabHome";
 import CollabRoom from "./components/collab/CollabRoom";
-import CommunityComponent from "./components/community/community.component";
-import Contact from "./components/contactus/contactus";
-import ContributorsComponent from "./components/footer/contributors";
-import CookiePolicy from "./components/footer/cookie-policy.tsx";
-import DashboardComponent from "./components/dashboard/dashboard.component";
-import EmailValidationComponent from "./components/email_validation/email.validation.component";
-import ExploreComponent from "./components/post/post.component";
-import GuidelinesComponent from "./components/footer/guidelines.tsx";
-import HelpCenterComponent from "./components/help_center/help_center.component";
+import StoriesComponent from "./components/stories/stories.component";
+
+
+
 import HeroSectionComponent from "./components/hero/hero_section.component";
 import HomeComponent from "./components/home/home.component";
 import LoginComponent from "./components/login/login.component";
@@ -41,16 +36,6 @@ import ResourcesListComponent from "./components/community/resources_list.compon
 import SettingComponent from "./components/dashboard/settings/settings.component";
 import SignUpComponent from "./components/signup/signup.component";
 import StoryWorkspace from "./components/story/StoryWorkspace";
-import TemplatesComponent from "./components/templates/templates.component";
-import Terms from "./components/footer/terms.tsx";
-import UserComponent from "./components/dashboard/users/user.component";
-import WriterApplicationComponent from "./components/dashboard/writers/writer_application.component";
-
-// vi. Subcomponents
-import ScrollToTop from "./components/ScrollToTop";
-import StoriesComponent from "./components/stories/stories.component";
-import StoryInspirationWrapper from "./components/StoryInspirationWrapper";
-import WritingAssistantComponent from "./components/writing-assistant/writing_assistant.component";
 
 type ProtectedRouteProps = {
   allowedRoles: string[];
