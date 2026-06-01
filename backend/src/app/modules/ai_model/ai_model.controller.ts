@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
+import { setGuestUserIdCookie } from "../../../utils/cookie.util";
 import ApiError from "../../../errors/api_error";
 import catchAsync from "../../../shared/catch_async";
 import sendResponse from "../../../shared/send_response";
@@ -41,7 +42,7 @@ const aiFreeModelGenerate = catchAsync(async (req: Request, res: Response) => {
 
   if (!userId) {
     userId = Math.random().toString(36).substring(7);
-    res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
+    setGuestUserIdCookie(res, userId);
   }
 
   const guard = createGuestQuotaGuard(userId);
@@ -85,9 +86,10 @@ const aiFreeModelAlternateEndings = catchAsync(
     const payload = req.body;
     let userId = req.cookies.userId as string | undefined;
 
+    // ─── FIXED: Replaced raw res.cookie with secure utility wrapper ───
     if (!userId) {
       userId = Math.random().toString(36).substring(7);
-      res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
+      setGuestUserIdCookie(res, userId);
     }
 
     const guard = createGuestQuotaGuard(userId);
@@ -118,6 +120,14 @@ const aiModelRemix = catchAsync(async (req: Request, res: Response) => {
 
 const aiFreeModelRemix = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body as IRemixPayload;
+  
+  // ─── FIXED: Added missing guest tracking context initialization ───
+  let userId = req.cookies.userId as string | undefined;
+  if (!userId) {
+    userId = Math.random().toString(36).substring(7);
+    setGuestUserIdCookie(res, userId);
+  }
+
   const result = await AiModelService.aiFreeModelRemix(payload);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -141,7 +151,15 @@ const aiModelTranslate = catchAsync(async (req: Request, res: Response) => {
 
 const aiFreeModelTranslate = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body as ITranslatePayload;
-  const result = await AiModelService.aiFreeModelTranslate(payload);
+
+  // ─── FIXED: Added missing guest tracking context initialization ───
+  let userId = req.cookies.userId as string | undefined;
+  if (!userId) {
+    userId = Math.random().toString(36).substring(7);
+    setGuestUserIdCookie(res, userId);
+  }
+
+  const result = await ApiModelService.aiFreeModelTranslate(payload);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -160,4 +178,3 @@ export const AiModelController = {
   aiModelTranslate,
   aiFreeModelTranslate,
 };
-
