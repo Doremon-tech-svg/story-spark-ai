@@ -498,7 +498,11 @@ const StoriesComponent = () => {
                       <button
                         type="button"
                         disabled={loading}
-                        onClick={() => handleRegenerate(0)}
+                        onClick={() => {
+                          if (selectedStoryIndex !== null) {
+                            handleRegenerate(selectedStoryIndex);
+                            }
+                          }}
                         className="rounded-lg border border-indigo-400/30 bg-white/5 px-5 py-3 text-sm font-semibold text-indigo-300 transition-all duration-300 hover:bg-indigo-500/10 hover:border-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         🔄 Regenerate

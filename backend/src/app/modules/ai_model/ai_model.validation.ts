@@ -11,6 +11,8 @@ const aiAlternateEndings = z.object({
     title: z.string({ required_error: "Title is required!" }),
     content: z.string({ required_error: "Content is required!" }),
     tag: z.string({ required_error: "Tag is required!" }),
+    prompt: z.string().optional(),
+    wordLength: z.number().optional(),
   }),
 });
 

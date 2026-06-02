@@ -29,6 +29,7 @@ interface StoriesComponentProps {
   isLogin: boolean;
   setStories: (stories: IStories[]) => void;
   onPublishSuccess?: () => void;
+  onRegenerate?: (index: number) => void;
   setSelectedStoryIndex: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
@@ -88,14 +89,16 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
       toast.loading("Regenerating section...", {
         id: "regen-section",
       });
-
       const payload = {
+        title: selectedStory.title,
+        content: selectedStory.content,
+        tag: selectedStory.tag,
         prompt: `
-Rewrite only this section of the story while preserving the same tone, characters, and continuity.
+      Rewrite only this section of the story while preserving the same tone, characters, and continuity.
 
-Section:
-${targetParagraph}
-      `,
+      Section:
+      ${targetParagraph}
+        `,
         wordLength: 120,
       };
 
@@ -163,6 +166,7 @@ ${targetParagraph}
         : generateFreeAlternateEndings(payload);
 
       const res = await generationRequest.unwrap();
+      console.log("REGEN RESPONSE", res);
       if (res && res.data) {
         setEndingsCache((prev) => ({
           ...prev,
