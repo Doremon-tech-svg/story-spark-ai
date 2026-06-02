@@ -12,11 +12,17 @@ const toggleReaction = async (
   token: ITokenPayload
 ) => {
   const { email } = token;
+
   const user = await User.findOne({ email });
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found!");
   }
-  const post = await Post.findOne({ _id: postId, isDeleted: { $ne: true } });
+
+  const post = await Post.findOne({
+    _id: postId,
+    isDeleted: { $ne: true },
+  });
+
   if (!post) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
   }
@@ -28,14 +34,43 @@ const toggleReaction = async (
 
   if (existingReaction) {
     await Reaction.deleteOne({ _id: existingReaction._id });
-  } else {
-    const newReaction = await Reaction.create({
-      postId: new Types.ObjectId(postId),
-      userId: user._id,
-      type: type,
-    });
-    return newReaction;
+
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: postId },
+      { $inc: { likesCount: -1 } },
+      { new: true }
+    );
+
+    if (updatedPost && updatedPost.likesCount < 0) {
+      await Post.updateOne(
+        { _id: postId },
+        { $set: { likesCount: 0 } }
+      );
+    }
+
+    return {
+      message: "Reaction removed",
+      likesCount: Math.max(0, updatedPost?.likesCount ?? 0),
+    };
   }
+
+  const newReaction = await Reaction.create({
+    postId: new Types.ObjectId(postId),
+    userId: user._id,
+    type,
+  });
+
+  const updatedPost = await Post.findOneAndUpdate(
+    { _id: postId },
+    { $inc: { likesCount: 1 } },
+    { new: true }
+  );
+
+  return {
+    message: "Reaction added",
+    reaction: newReaction,
+    likesCount: updatedPost?.likesCount ?? 1,
+  };
 };
 
 export const ReactionService = {
