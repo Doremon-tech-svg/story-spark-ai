@@ -13,6 +13,7 @@ import MagicCursorComponent from "./components/magic-cursor/magic_cursor.compone
 import HeroSectionComponent from "./components/hero/hero_section.component";
 import HomeComponent from "./components/home/home.component";
 import NotFoundComponent from "./components/not-found.component";
+import LeaderboardComponent from "./components/leaderboard/LeaderboardComponent";
 
 // Lazy-loaded page components
 const TemplatesComponent = lazy(() => import("./components/templates/templates.component"));
@@ -105,6 +106,7 @@ const router = createBrowserRouter([
       { path: "contributors", element: <ContributorsComponent /> },
       { path: "community", element: <CommunityComponent /> },
       { path: "report-bug", element: <ReportBug /> },
+      { path: "leaderboard", element: lazyPage(<LeaderboardComponent />) },
       {
         element: <ProtectedRoute allowedRoles={ALL_ROLES} />,
         children: [
