@@ -92,7 +92,7 @@ const SSInput = <T extends FieldValues>({
 
         {/* Right Password Eye Toggle */}
 
-        {type === "password" && (
+              const inputType = type === "password" ? (showLocalPassword ? "text" : "password") : type;
 
           <button
             type="button"
