@@ -7,27 +7,61 @@ import ApiError from "../../../errors/api_error";
 import httpStatus from "http-status";
 import { WriterApplication } from "../writer_application/writer_application.model";
 
-main
+const getDashboardAnalysis = async (userId: string, userRole: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (
+    userRole === ENUM_USER_ROLE.WRITER ||
+    userRole === ENUM_USER_ROLE.ADMIN ||
+    userRole === ENUM_USER_ROLE.SUPER_ADMIN
+  ) {
+    const totalPosts = await Post.countDocuments({ author: userId });
+
+    const postsPerMonth = await Post.aggregate([
+      { $match: { author: user._id } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+      { $limit: 12 },
+    ]);
+
+    const topicCount = await Post.aggregate([
+      { $match: { author: user._id } },
+      { $unwind: "$topic" },
+      { $group: { _id: "$topic", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ]);
+
+    const application = await WriterApplication.findOne({ userId });
+    const applicationStatus = application?.status || null;
+
+    const writerStats = {
+      totalReaders: 0,
+      totalPosts,
+      subscriptionStatus: user.subscriptionType.toUpperCase(),
+      applicationStatus,
+      gamification: user.gamification || { xp: 0, level: 1, streak: 0, badges: [] },
+    };
 
     return {
-      role,
-      writerStats: {
-        totalReaders,
-        totalPosts,
-        subscriptionStatus: user.subscriptionType.toUpperCase(),
-        applicationStatus,
-        gamification: user.gamification || { xp: 0, level: 1, streak: 0, badges: [] },
-      },
+      role: userRole,
+      writerStats,
       posts: {
-        perMonth: postsPerMonth,
-        topics: topicCount,
-      }
+        perMonth: postsPerMonth.map((p) => ({ month: p._id, count: p.count })),
+        topics: topicCount.map((t) => ({ name: t._id, count: t.count })),
+      },
     };
   }
 
-  // Else standard user
   return {
-main
+    role: userRole,
   };
 };
 
