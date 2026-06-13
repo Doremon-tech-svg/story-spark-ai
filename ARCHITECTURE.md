@@ -87,8 +87,7 @@ flowchart TD
 
 ---
 
-## 🧱 Layer-by-Layer Breakdown
-## Story Generation Request Flow
+## 🔄 Story Generation Request Flow
 
 The following diagram illustrates how a story generation request moves through the Story Spark AI system.
 
@@ -115,6 +114,8 @@ flowchart LR
 6. Story data is stored in MongoDB.
 7. Backend returns the response.
 8. Frontend displays generated story variations to the user.
+
+## 🧱 Layer-by-Layer Breakdown
 
 ### 1. ⚛️ Frontend — `frontend/`
 React + Vite + TypeScript SPA running on port **4001**.
