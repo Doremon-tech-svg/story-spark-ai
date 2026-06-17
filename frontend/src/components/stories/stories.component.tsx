@@ -17,16 +17,6 @@ import { useRecentPrompts } from "../../hooks/useRecentPrompts";
 import StoryGeneratingAnimation from "../loading/story-generating-animation.component";
 import { useDebounce } from "../../hooks/useDebounce";
 
-const soundtrackMap: Record<string, string> = {
-  "ðŸ§™ Fantasy": "/audio/fantasy.mp3",
-  "ðŸ˜± Horror": "/audio/horror.mp3",
-  "ðŸ’• Romance": "/audio/romance.mp3",
-  "ðŸŽ­ Drama": "/audio/drama.mp3", 
-  "ðŸ˜‚ Comedy": "/audio/comedy.mp3", 
-  "ðŸš€ Sci-Fi": "/audio/sci-fi.mp3", 
-  "ðŸ” Mystery": "/audio/mystery.mp3", 
-  "ðŸŒŸ Adventure": "/audio/adventure.mp3"
-};
 
 type Inputs = {
   prompt: string;
@@ -50,16 +40,7 @@ const LANGUAGES = [
   { code: "mr", name: "Marathi" },
 ];
 
-const GENRES = [
-  { value: "ðŸŽ­ Drama", icon: "ðŸŽ­", name: "Drama" },
-  { value: "ðŸ˜‚ Comedy", icon: "ðŸ˜‚", name: "Comedy" },
-  { value: "ðŸ˜± Horror", icon: "ðŸ˜±", name: "Horror" },
-  { value: "ðŸ’• Romance", icon: "ðŸ’•", name: "Romance" },
-  { value: "ðŸš€ Sci-Fi", icon: "ðŸš€", name: "Sci-Fi" },
-  { value: "ðŸ§™ Fantasy", icon: "ðŸ§™", name: "Fantasy" },
-  { value: "ðŸ” Mystery", icon: "ðŸ”", name: "Mystery" },
-  { value: "ðŸŒŸ Adventure", icon: "ðŸŒŸ", name: "Adventure" },
-] as const;
+
 
 type GenreName = (typeof GENRES)[number]["name"];
 
@@ -610,17 +591,7 @@ useEffect(() => {
 
   const activeGenerationRef = useRef<{ abort: () => void } | null>(null);
   const isGenerationInProgressRef = useRef(false);
-  const [guestRequestCount, setGuestRequestCount] = useState<number>(() =>
-    parseInt(localStorage.getItem("guestRequestCount") || "0", 10)
-  );
-  const [showLimitModal, setShowLimitModal] = useState<boolean>(false);
-  const [isRecentPromptsOpen, setIsRecentPromptsOpen] = useState<boolean>(false);
-  const { recentPrompts, addPrompt, removePrompt, clearAll } = useRecentPrompts();
-  const text = UI_TEXT[selectedLanguage] ?? UI_TEXT.English;
-  const genreLabels = GENRE_LABELS[selectedLanguage] ?? GENRE_LABELS.English;
-
-  const activeGenerationRef = useRef<{ abort: () => void } | null>(null);
-  const isGenerationInProgressRef = useRef(false);
+  
   
   const [guestRequestCount, setGuestRequestCount] = useState<number>(() =>
     parseInt(localStorage.getItem("guestRequestCount") || "0", 10)
@@ -633,23 +604,7 @@ useEffect(() => {
   const text = UI_TEXT[selectedLanguage] ?? UI_TEXT.English;
   const genreLabels = GENRE_LABELS[selectedLanguage] ?? GENRE_LABELS.English;
 
-  const playSoundtrack = (genre: string) => {
-    const soundtrack = soundtrackMap[genre];
-    if (!soundtrack) return;
-
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-
-    const audio = new Audio(soundtrack);
-    audio.loop = true;
-    audio.volume = 0.3;
-    audio.play().catch((err) => {
-      console.log("Audio playback failed:", err);
-    });
-    audioRef.current = audio;
-  };
+  
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
