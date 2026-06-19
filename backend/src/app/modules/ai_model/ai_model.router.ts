@@ -15,7 +15,15 @@ router.post("/generate-model", auth(), storyGenerationRateLimiter, validateReque
 
 router.post("/generate-free-model", validateRequest(AIModelValidator.aiModel), freeAiRateLimiter, AiModelController.aiFreeModelGenerate);
 
-router.post("/generate-model-stream", aiGenerationRateLimiter, auth(), validateRequest(AIModelValidator.aiModel), checkRequestLimit(), AiModelController.aiModelGenerateStream);
+// Generate Model Stream - PROTECTED
+router.post(
+  "/generate-model-stream",
+  aiGenerationRateLimiter,
+  auth(),
+  validateRequest(AIModelValidator.aiModel),
+  checkRequestLimit(),
+  AiModelController.aiModelGenerateStream
+);
 
 // ALTERNATE ENDINGS
 router.post("/generate-alternate-endings", auth(), storyGenerationRateLimiter, validateRequest(AIModelValidator.aiAlternateEndings), checkRequestLimit(), AiModelController.aiModelAlternateEndings);
